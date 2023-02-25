@@ -25,6 +25,30 @@ if (navigator.geolocation) {
 
       //   https://www.google.com/maps/@31.4497036,74.4173874
       console.log(`https://www.google.com/maps/@${latitude},${longitude})`);
+
+      const coords = [latitude, longitude];
+
+      //   Leaflet Library
+      //   var map = L.map('map').setView([51.505, -0.09], 13);
+      var map = L.map('map').setView(coords, 13);
+
+      //   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      //     attribution:
+      //       '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      //   }).addTo(map);
+      L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      //   L.marker([51.5, -0.09])
+      //     .addTo(map)
+      //     .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+      //     .openPopup();
+      L.marker(coords)
+        .addTo(map)
+        .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+        .openPopup();
     },
     function () {
       alert('Could not get your position!');
