@@ -9,6 +9,7 @@ class Workout {
   date = new Date();
   // Create id using library
   id = (Date.now() + '').slice(-10);
+  clicks = 0;
 
   constructor(coords, distance, duration) {
     // this.date = ...
@@ -27,6 +28,10 @@ class Workout {
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
       months[this.date.getMonth()]
     } ${this.date.getDate()}`;
+  }
+
+  click() {
+    this.clicks++;
   }
 }
 
@@ -93,6 +98,7 @@ class App {
   // Private class fields
   // Private instance properties so the properties that are available to all of the objects created through this class
   #map;
+  #mapZoomLevel = 13;
   #mapEvent;
   #workouts = [];
 
@@ -104,6 +110,9 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
 
     inputType.addEventListener('change', this._toggleElevationField.bind(this));
+
+    // Event delegation
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
   }
 
   _getPosition() {
@@ -137,7 +146,7 @@ class App {
 
     //   Leaflet Library
     //   var map = L.map('map').setView([51.505, -0.09], 13);
-    this.#map = L.map('map').setView(coords, 13);
+    this.#map = L.map('map').setView(coords, this.#mapZoomLevel);
 
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution:
@@ -348,6 +357,30 @@ class App {
     }
 
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToPopup(e) {
+    const workoutEl = e.target.closest('.workout');
+    console.log(workoutEl);
+
+    if (!workoutEl) return;
+
+    const workout = this.#workouts.find(
+      workout => workout.id === workoutEl.dataset.id
+    );
+
+    console.log(workout);
+
+    // Take the coordinates from workout and move mouse to leaflet
+    this.#map.setView(workout.coords, this.#mapZoomLevel, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
+
+    // using the public interface
+    workout.click();
   }
 }
 
